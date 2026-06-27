@@ -1,5 +1,4 @@
 
-import { error } from 'console';
 import express from 'express';
 import { MongoClient ,ObjectId} from 'mongodb';
 import path from 'path';
@@ -78,6 +77,24 @@ app.patch("/update-student/:id", async (req,res)=>{
     }else{
            res.status(404).json({message : "Data not found"});
        }
+})
+
+app.delete("/delete-student/:id",async (req,res)=>{
+    
+    const id = req.params.id;
+
+    if(!ObjectId.isValid(id)){
+       return res.status(400).json({error : "StudentId is not Valid"});
+    }
+    const result = await db.collection('students').deleteOne({_id : new ObjectId(id)});
+    
+
+    if(result.deletedCount === 1){
+        return res.status(200).json({message : "Deleted SuccessFully...."});
+    }
+    else{
+        return res.status(404).json({message : "Student Not Found........."});
+    }
 })
 
 app.listen(port,async ()=>{
