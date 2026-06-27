@@ -6,6 +6,7 @@ import path from 'path';
 const app = express();
 const port = 80;
 
+// middleWare
 app.use(express.json());
 
 const url = "mongodb://localhost:27017";
@@ -28,6 +29,17 @@ app.get("/data",async (req,res)=>{
     console.log(data);
     res.json(data);
 });
+
+app.post("/add-student",async (req,res)=>{
+    const {name,age,email,city} = req.body;
+
+    if(!name || !age || !email || !city){
+        res.status(400).json({error : "Please Provide name,age,email,city properly..."});
+    }
+
+    const result = await db.collection('students').insertOne({name,age,email,city});
+    res.status(201).json({message : "Student Added SuccessFully",studentId : result.insertedId});
+})
 
 app.listen(port,async ()=>{
     await connectToDb();
