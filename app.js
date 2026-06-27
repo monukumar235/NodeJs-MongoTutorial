@@ -1,6 +1,7 @@
 
+import { error } from 'console';
 import express from 'express';
-import { MongoClient } from 'mongodb';
+import { MongoClient ,ObjectId} from 'mongodb';
 import path from 'path';
 
 const app = express();
@@ -28,6 +29,56 @@ app.get("/data",async (req,res)=>{
     console.log(data);
     res.json(data);
 });
+
+app.put("/update-student/:id",async (req,res)=>{
+
+    const id  = req.params.id;
+    const newData = req.body;
+
+    if(!ObjectId.isValid(id)){
+        return res.status(400).json({error : "Id is not Valid"});
+    }
+    if(Object.keys(newData).length === 0){
+        return res.status(400).json({error : "Data can not be empty...."});
+    }
+
+    const result = await db.collection('students').replaceOne(
+        {_id : new ObjectId(id)},
+        newData
+    );
+    console.log(result);
+    if(result.matchedCount === 1){
+        res.status(200).json({message : "Student data updated successfully...."});
+    }
+    else{
+        res.status(404).json({message : "Student not found......"});
+    }
+});
+
+
+app.patch("/update-student/:id", async (req,res)=>{
+    const id = req.params.id;
+    const updatedData = req.body;
+
+    if(!ObjectId.isValid(id)){
+        return res.status(400).json({error : "Id is Invalid.."});
+    }
+    
+    if(Object.keys(updatedData).length === 0){
+        return res.status(400).json({error : "Data can not be empty"});
+    }
+
+    const result = await db.collection('students').updateOne(
+       { _id : new ObjectId(id)},
+       {$set : updatedData}
+    );
+
+    if(result.matchedCount === 1){
+        res.status(200).json({message : "Updated Successfully........"})
+    }else{
+           res.status(404).json({message : "Data not found"});
+       }
+})
 
 app.listen(port,async ()=>{
     await connectToDb();
