@@ -15,23 +15,21 @@ const client = new MongoClient(url);
 
 app.set('view engine','pug');
 
-app.get("/data",async (req,res)=>{
-    try{
-        await client.connect();
-        console.log("Connected to server");
+let db;
 
-        const db = client.db(dbName);
-        const collection = db.collection("students");
-        const data = await collection.find({age :{$gte:25}}).toArray();
-        console.log(data);
-        res.render("index",{students : data});
-        // res.json(data);
-    }catch(error){
-        console.log("An Error Occured" + error);
-        res.status(500).send({error : "An Error Occured."});
-    }
+ async function connectToDb(params) {
+    await client.connect();
+    console.log("Connecte to Database....");
+    db = client.db(dbName);
+}
+
+app.get("/data",async (req,res)=>{
+    const data = await db.collection('students').find().toArray();
+    console.log(data);
+    res.json(data);
 });
 
-app.listen(port,()=>{
+app.listen(port,async ()=>{
+    await connectToDb();
     console.log(`Server Started at port http://localhost:${port}`);
 });
