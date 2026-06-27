@@ -1,0 +1,20 @@
+doctype html
+html
+  head
+    title User Data
+    //- style
+    //-     include ../static/style.css
+  body
+    h1 User Data
+
+    table(border="1")
+      tr
+        th Name
+        th Email
+        th Password
+
+      each std in students
+        tr
+          td= std.name
+          td= std.email 
+          td= std.password 

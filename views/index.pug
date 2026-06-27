@@ -1,0 +1,22 @@
+doctype html
+html
+  head
+    title Students Data
+    //- style
+    //-     include ../static/style.css
+  body
+    h1 Students Data
+
+    table(border="1")
+      tr
+        th Name
+        th Age
+        th Email
+        th City
+
+      each std in students
+        tr
+          td= std.name
+          td= std.age
+          td= std.email
+          td= std.city
